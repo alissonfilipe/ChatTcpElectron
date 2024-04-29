@@ -1,4 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const net = require('net');
+const iconv = require('iconv-lite');
 
 let win;
 
@@ -33,8 +35,6 @@ app.on('activate', () => {
     }
 });
 
-const net = require('net');
-
 let server = null;
 let client = null;
 const serverClients = {
@@ -45,8 +45,9 @@ const serverClients = {
 };
 
 function sendMessage(user, data) {
-    const hours = `${new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours()}`;
-    const minutes = `${new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()}`;
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
     const messageObj = { user: user, message: data.toString().trim(), date: `${hours}:${minutes}` };
 
     serverClients.users.forEach((conn) => {
@@ -58,7 +59,7 @@ function sendMessage(user, data) {
         }
     });
 
-    console.log(`Mensagem recebida do usuário ${user}: ${messageObj.message}`);
+    console.log(`Mensagem recebida do usuário ${user}: ${iconv.decode(messageObj.message, 'utf8')} (${hours}:${minutes})`);
 }
 
 ipcMain.on('run-server', (event, arg) => {
@@ -70,8 +71,13 @@ ipcMain.on('run-server', (event, arg) => {
         conn.id = serverClients.count - 1;
 
         conn.on('data', function(data) {
-            if (!conn.nickname) conn.nickname = data.toString().trim();
-            console.log(`Usuario conectado: ${conn.nickname}`); // Imprime o nome do usuário que se conecta
+            if (!conn.nickname) {
+                conn.nickname = data.toString().trim();
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                console.log(`Usuário ${conn.nickname} entrou no servidor (${hours}:${minutes})`);
+            }
             sendMessage(conn.nickname, data);
         });
 
