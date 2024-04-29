@@ -1,7 +1,9 @@
 <h1>CHAT TCP ELECTRON NODE</h1>
 
 <h2>Desenvolvimento</h2>
-<p></p>
+<p>após a verificações das exigências do professor descobri que eu precisava colar quando o usuário entra e o nome do usuário e quando o usuário sai, 
+por isso que eu adicionei mais funções para esse projeto. 
+</p>
 
 
 
