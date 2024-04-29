@@ -91,7 +91,7 @@ ipcMain.on('run-server', (event, arg) => {
 
     server.on('error', function(err) {
         if (err.code == 'EADDRINUSE') {
-            console.warn('Address in use, retrying...');
+            console.warn('endereço em uso, tente novamente...');
             setTimeout(() => {
                 server.close();
             }, 1000);
@@ -123,7 +123,7 @@ ipcMain.on('client-connect', (event, arg) => {
     client.setEncoding('utf8');
 
     client.on('close', function() {
-        console.log('A conexão foi fechada');
+        console.log('A conexao foi fechada');
     });
 
     const ip = arg.ip;
