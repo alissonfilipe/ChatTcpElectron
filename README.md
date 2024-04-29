@@ -8,7 +8,7 @@
 
 
 <h2>Explicação</h2>
-<article>
+<div>
         <section>
             <h3>Inicialização da janela principal</h3>
             <p>
@@ -55,4 +55,4 @@
                 <li>Há um bloco que lida com a conexão de clientes ao servidor TCP, mostrando mensagens do servidor e enviando mensagens para ele.</li>
             </ul>
         </section>
-    </article>
+    </div>
