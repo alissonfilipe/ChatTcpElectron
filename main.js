@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, ipcRenderer } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron');
 
 let win;
 
@@ -19,55 +19,51 @@ function createWindow() {
     });
 }
 
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        app.quit()
+        app.quit();
     }
-})
+});
 
 app.on('activate', () => {
     if (win === null) {
-        createWindow()
+        createWindow();
     }
-})
+});
 
-var server = {};
-var client = {};
-var serverClients = {
+const net = require('net');
+
+let server = null;
+let client = null;
+const serverClients = {
     users: [],
     get count() {
         return this.users.length;
     }
 };
 
-function outerSend(data) {
-    ipcRenderer.send('got-message', data)
+function sendMessage(user, data) {
+    const hours = `${new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours()}`;
+    const minutes = `${new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()}`;
+    const messageObj = { user: user, message: data.toString().trim(), date: `${hours}:${minutes}` };
+
+    serverClients.users.forEach((conn) => {
+        if (user !== conn.nickname) {
+            conn.write(JSON.stringify(messageObj));
+        } else {
+            const selfMessage = {...messageObj, self: true };
+            conn.write(JSON.stringify(selfMessage));
+        }
+    });
+
+    console.log(`Mensagem recebida do usuário ${user}: ${messageObj.message}`);
 }
 
 ipcMain.on('run-server', (event, arg) => {
     const ip = arg.ip;
     const port = arg.port;
-
-    var net = require('net');
-
-    function sendMessage(user, data) {
-        let hours = `${new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours()}`;
-        let minutes = `${new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()}`;
-        let messageObj = { user: user, message: data.toString().trim(), date: `${hours}:${minutes}` };
-
-        serverClients.users.forEach((conn) => {
-            if (user != conn.nickname) {
-                conn.write(JSON.stringify(messageObj));
-            } else {
-                let selfMessage = {...messageObj, self: true };
-                conn.write(JSON.stringify(selfMessage));
-            }
-        });
-
-        event.sender.send('got-message-reply', JSON.stringify(messageObj));
-    }
 
     server = net.createServer(function(conn) {
         serverClients.users.push(conn);
@@ -75,6 +71,7 @@ ipcMain.on('run-server', (event, arg) => {
 
         conn.on('data', function(data) {
             if (!conn.nickname) conn.nickname = data.toString().trim();
+            console.log(`Usuario conectado: ${conn.nickname}`); // Imprime o nome do usuário que se conecta
             sendMessage(conn.nickname, data);
         });
 
@@ -83,15 +80,11 @@ ipcMain.on('run-server', (event, arg) => {
         });
 
         conn.on("error", () => {});
-    })
-
-    server.on('connection', function(conn) {
-        console.log(`cliente conectado`);
-    })
+    });
 
     server.on('error', function(err) {
         if (err.code == 'EADDRINUSE') {
-            console.warn('endereço em uso, tente novamente...');
+            console.warn('Endereço em uso, tente novamente...');
             setTimeout(() => {
                 server.close();
             }, 1000);
@@ -103,13 +96,14 @@ ipcMain.on('run-server', (event, arg) => {
     server.on('listening', function() {
         event.sender.send('run-server-reply', { 'ip': ip, 'port': port });
     });
+
     server.listen(port, ip);
-})
+});
 
 ipcMain.on('close-server', (event, arg) => {
     serverClients.users.forEach(client => {
         client.end();
-    })
+    });
     server.close((err, data) => {
         if (err) console.log(err);
         event.sender.send('close-server-reply', {});
@@ -118,17 +112,17 @@ ipcMain.on('close-server', (event, arg) => {
 });
 
 ipcMain.on('client-connect', (event, arg) => {
-    var net = require('net');
     client = new net.Socket();
     client.setEncoding('utf8');
 
     client.on('close', function() {
-        console.log('A conexao foi fechada');
+        console.log('A conexão foi fechada');
     });
 
     const ip = arg.ip;
     const port = arg.port;
     const nickname = arg.nickname;
+
     client.on('data', function(data) {
         event.sender.send('new-message-reply', data);
     });
@@ -145,9 +139,9 @@ ipcMain.on('got-message', (event, arg) => {
 
 ipcMain.on('send-message', (event, arg) => {
     client.write(arg);
-})
+});
 
 ipcMain.on('close-client', (event, arg) => {
     client.end();
     event.sender.send('close-client-reply');
-})
+});
