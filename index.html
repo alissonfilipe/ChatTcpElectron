@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="assets/styles/main.css">
+    <link rel="stylesheet" href="assets/styles/tabs.css">
+    <link rel="stylesheet" href="assets/font-awesome/css/all.min.css">
+    <title>Electron TCP chat</title>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="tabs">
+            <div class="tabs-nav">
+                <a class="active" href="#tab1">Criar servidor</a>
+                <a href="#tab2">Conectar a um servidor</a>
+            </div>
+            <div class="tabs-content">
+                <div id="tab1">
+                    <div class="server-form">
+                    </div>
+                </div>
+
+                <div id="tab2">
+                    <div class="client-form">
+                        <div id="chat-messages"></div>
+                        <!-- Nova div para exibir mensagens -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        //resources
+        require('./assets/tabs/tabs')
+            //base form
+        require('./render-handlers/base-render');
+        //handlers
+        require('./render-handlers/server-start');
+        require('./render-handlers/server-close');
+        require('./render-handlers/client-connect');
+        require('./render-handlers/server-logging');
+        require('./render-handlers/send-message');
+        require('./render-handlers/client-logging');
+        require('./render-handlers/client-close');
+    </script>
+
+</body>
+
+</html>
