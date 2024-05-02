@@ -147,6 +147,8 @@ ipcMain.on('send-message', (event, arg) => {
 });
 
 ipcMain.on('close-client', (event, arg) => {
+
+    client.write("o cliente saiu");
     client.end();
     event.sender.send('close-client-reply');
 });
