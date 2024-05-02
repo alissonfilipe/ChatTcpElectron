@@ -59,7 +59,7 @@ function sendMessage(user, data) {
         }
     });
 
-    console.log(`Mensagem recebida do usuário ${user}: ${iconv.decode(messageObj.message, 'utf8')} (${hours}:${minutes})`);
+    console.log(`${user}: ${iconv.decode(messageObj.message, 'utf8')} (${hours}:${minutes})`);
 }
 
 ipcMain.on('run-server', (event, arg) => {
@@ -76,13 +76,14 @@ ipcMain.on('run-server', (event, arg) => {
                 const now = new Date();
                 const hours = now.getHours().toString().padStart(2, '0');
                 const minutes = now.getMinutes().toString().padStart(2, '0');
-                console.log(`Usuário ${conn.nickname} entrou no servidor (${hours}:${minutes})`);
+                console.log(`Usuario ${conn.nickname} entrou no servidor (${hours}:${minutes})`);
             }
             sendMessage(conn.nickname, data);
         });
 
         conn.on('close', function() {
             serverClients.users.splice(conn.id, 1);
+            console.log(`O cliente ${conn.nickname} se desconectou`);
         });
 
         conn.on("error", () => {});
@@ -90,7 +91,7 @@ ipcMain.on('run-server', (event, arg) => {
 
     server.on('error', function(err) {
         if (err.code == 'EADDRINUSE') {
-            console.warn('Endereço em uso, tente novamente...');
+            console.warn('Endereco em uso, tente novamente...');
             setTimeout(() => {
                 server.close();
             }, 1000);
@@ -121,9 +122,7 @@ ipcMain.on('client-connect', (event, arg) => {
     client = new net.Socket();
     client.setEncoding('utf8');
 
-    client.on('close', function() {
-        console.log('A conexão foi fechada');
-    });
+
 
     const ip = arg.ip;
     const port = arg.port;
