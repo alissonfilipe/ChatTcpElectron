@@ -4,6 +4,7 @@ const iconv = require('iconv-lite');
 
 let win;
 
+
 function createWindow() {
     win = new BrowserWindow({
         width: 750,
@@ -83,7 +84,9 @@ ipcMain.on('run-server', (event, arg) => {
 
         conn.on('close', function() {
             serverClients.users.splice(conn.id, 1);
+
             console.log(`O cliente ${conn.nickname} se desconectou`);
+            sendMessage(conn.nickname, `O cliente ${conn.nickname} se desconectou`);
         });
 
         conn.on("error", () => {});
@@ -148,7 +151,9 @@ ipcMain.on('send-message', (event, arg) => {
 
 ipcMain.on('close-client', (event, arg) => {
 
-    client.write("o cliente saiu");
+
     client.end();
     event.sender.send('close-client-reply');
+
+
 });
