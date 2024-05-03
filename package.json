@@ -1,0 +1,35 @@
+{
+    "name": "electron-app",
+    "version": "1.0.0",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
+    },
+    "build": {
+        "extraResources": [{
+            "from": "./markup",
+            "to": "../markup",
+            "filter": [
+                "**/*"
+            ]
+        }],
+        "publish": null,
+        "asar": false,
+        "win": {
+            "target": [{
+                "target": "nsis",
+                "arch": [
+                    "x64",
+                    "ia32"
+                ]
+            }]
+        }
+    },
+    "devDependencies": {
+        "electron": "^5.0.6",
+        "electron-builder": "^20.44.4"
+    }
+
+}
