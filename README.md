@@ -1,8 +1,9 @@
 <h1>CHAT TCP ELECTRON NODE</h1>
 
 <h2>Desenvolvimento</h2>
-<p>após a verificações das exigências do professor descobri que eu precisava colar quando o usuário entra e o nome do usuário e quando o usuário sai, 
-por isso que eu adicionei mais funções para esse projeto. 
+<p>após a verificações das exigências do professor descobri que eu precisava colocar quando o usuário entra e o nome do usuário e quando o usuário sai, 
+por isso que eu adicionei mais funções para esse projeto. <br>
+todo o desenvolvimento desse aplicativo se centralizou nas exigências do professor, e no momento estamos cobrindo todas elas (03/05/2024) faltando apenas algumas alterações na estilização da página para ficar mais agradável ao usuário e algumas adções de funções para evitar bugs. 
 </p>
 
 
