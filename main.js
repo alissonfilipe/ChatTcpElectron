@@ -3,7 +3,7 @@ const net = require('net');
 const iconv = require('iconv-lite');
 
 let win;
-
+let a;
 
 function createWindow() {
     win = new BrowserWindow({
